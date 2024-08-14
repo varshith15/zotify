@@ -1,9 +1,9 @@
 from math import floor
 from pathlib import Path
-from typing import Any
 
 from librespot.core import PlayableContentFeeder
 from librespot.metadata import AlbumId
+from librespot.proto import Metadata_pb2 as Metadata
 from librespot.structure import GeneralAudioStream
 from librespot.util import bytes_to_hex
 from requests import get
@@ -57,7 +57,7 @@ class Lyrics:
 
 
 class Playable:
-    cover_images: list[Any]
+    cover_images: list[Metadata.Image]
     input_stream: GeneralAudioStream
     metadata: list[MetadataEntry]
     name: str
@@ -165,6 +165,7 @@ class Track(PlayableContentFeeder.LoadedStream, Playable):
             MetadataEntry("popularity", int(self.popularity * 255) / 100),
             MetadataEntry("track_number", self.number, str(self.number).zfill(2)),
             MetadataEntry("title", self.name),
+            MetadataEntry("track", self.name),
             MetadataEntry("year", date.year),
             MetadataEntry(
                 "replaygain_track_gain", self.normalization_data.track_gain_db, ""

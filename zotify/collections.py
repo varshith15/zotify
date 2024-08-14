@@ -5,7 +5,7 @@ from librespot.metadata import (
     ShowId,
 )
 
-from zotify import Api
+from zotify import ApiClient
 from zotify.config import Config
 from zotify.utils import MetadataEntry, PlayableData, PlayableType, bytes_to_base62
 
@@ -13,12 +13,12 @@ from zotify.utils import MetadataEntry, PlayableData, PlayableType, bytes_to_bas
 class Collection:
     playables: list[PlayableData] = []
 
-    def __init__(self, b62_id: str, api: Api, config: Config = Config()):
+    def __init__(self, b62_id: str, api: ApiClient, config: Config = Config()):
         raise NotImplementedError
 
 
 class Album(Collection):
-    def __init__(self, b62_id: str, api: Api, config: Config = Config()):
+    def __init__(self, b62_id: str, api: ApiClient, config: Config = Config()):
         album = api.get_metadata_4_album(AlbumId.from_base62(b62_id))
         for disc in album.disc:
             for track in disc.track:
@@ -33,7 +33,7 @@ class Album(Collection):
 
 
 class Artist(Collection):
-    def __init__(self, b62_id: str, api: Api, config: Config = Config()):
+    def __init__(self, b62_id: str, api: ApiClient, config: Config = Config()):
         artist = api.get_metadata_4_artist(ArtistId.from_base62(b62_id))
         for album_group in (
             artist.album_group
@@ -55,7 +55,7 @@ class Artist(Collection):
 
 
 class Show(Collection):
-    def __init__(self, b62_id: str, api: Api, config: Config = Config()):
+    def __init__(self, b62_id: str, api: ApiClient, config: Config = Config()):
         show = api.get_metadata_4_show(ShowId.from_base62(b62_id))
         for episode in show.episode:
             self.playables.append(
@@ -69,7 +69,7 @@ class Show(Collection):
 
 
 class Playlist(Collection):
-    def __init__(self, b62_id: str, api: Api, config: Config = Config()):
+    def __init__(self, b62_id: str, api: ApiClient, config: Config = Config()):
         playlist = api.get_playlist(PlaylistId(b62_id))
         for i in range(len(playlist.contents.items)):
             item = playlist.contents.items[i]
@@ -111,7 +111,7 @@ class Playlist(Collection):
 
 
 class Track(Collection):
-    def __init__(self, b62_id: str, api: Api, config: Config = Config()):
+    def __init__(self, b62_id: str, api: ApiClient, config: Config = Config()):
         self.playables.append(
             PlayableData(
                 PlayableType.TRACK, b62_id, config.album_library, config.output_album
@@ -120,7 +120,7 @@ class Track(Collection):
 
 
 class Episode(Collection):
-    def __init__(self, b62_id: str, api: Api, config: Config = Config()):
+    def __init__(self, b62_id: str, api: ApiClient, config: Config = Config()):
         self.playables.append(
             PlayableData(
                 PlayableType.EPISODE,

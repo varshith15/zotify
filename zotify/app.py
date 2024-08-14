@@ -147,21 +147,24 @@ class App:
         Logger(self.__config)
 
         # Create session
-        if args.username != "" and args.password != "":
-            self.__session = Session.from_userpass(
-                args.username,
-                args.password,
-                self.__config.credentials_path,
-                self.__config.language,
-            )
-        elif self.__config.credentials_path.is_file():
-            self.__session = Session.from_file(
-                self.__config.credentials_path, self.__config.language
-            )
-        else:
-            self.__session = Session.from_prompt(
-                self.__config.credentials_path, self.__config.language
-            )
+        # if args.username != "" and args.password != "":
+        #     self.__session = Session.from_userpass(
+        #         args.username,
+        #         args.password,
+        #         self.__config.credentials_path,
+        #         self.__config.language,
+        #     )
+        # elif self.__config.credentials_path.is_file():
+        #     self.__session = Session.from_file(
+        #         self.__config.credentials_path, self.__config.language
+        #     )
+        # else:
+        #     self.__session = Session.from_prompt(
+        #         self.__config.credentials_path, self.__config.language
+        #     )
+        self.__session = Session.from_oauth(
+            self.__config.credentials_path, self.__config.language
+        )
 
         # Get items to download
         ids = self.get_selection(args)
@@ -268,6 +271,7 @@ class App:
                         LogChannel.SKIPS,
                         f'Skipping "{track.name}": Already exists at specified output',
                     )
+                    continue
 
                 # Download track
                 with Logger.progress(

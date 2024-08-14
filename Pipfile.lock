@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9cf0a0fbfd691c64820035a5c12805f868ae1d2401630b9f68b67b936f5e7892"
+            "sha256": "9a41882e9856db99151e4f1a3712d4b1562f2997e9a51cfcaf473335cd2db74c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -247,6 +247,15 @@
             "markers": "python_version >= '3.8'",
             "version": "==10.4.0"
         },
+        "pkce": {
+            "hashes": [
+                "sha256:55927e24c7d403b2491ebe182b95d9dcb1807643243d47e3879fbda5aad4471d",
+                "sha256:9775fd76d8a743d39b87df38af1cd04a58c9b5a5242d5a6350ef343d06814ab6"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3'",
+            "version": "==1.0.3"
+        },
         "protobuf": {
             "hashes": [
                 "sha256:06059eb6953ff01e56a25cd02cca1a9649a75a7e65397b5b9b4e929ed71d10cf",
@@ -276,13 +285,6 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==3.20.1"
-        },
-        "pwinput": {
-            "hashes": [
-                "sha256:ca1a8bd06e28872d751dbd4132d8637127c25b408ea3a349377314a5491426f3"
-            ],
-            "index": "pypi",
-            "version": "==1.0.3"
         },
         "pycryptodomex": {
             "hashes": [

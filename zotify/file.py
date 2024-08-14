@@ -55,7 +55,9 @@ class LocalFile:
             "-i",
             str(self.__path),
         ]
-        path = self.__path.parent.joinpath(self.__path.name.rsplit(".", 1)[0] + ext)
+        path = self.__path.parent.joinpath(
+            self.__path.name.rsplit(".", 1)[0] + "." + ext
+        )
         if self.__path == path:
             raise TranscodingError(
                 f"Cannot overwrite source, target file {path} already exists."
@@ -97,7 +99,7 @@ class LocalFile:
             try:
                 f[m.name] = m.value
             except KeyError:
-                pass
+                pass  # TODO
         try:
             f.save()
         except OggVorbisHeaderError:
