@@ -106,7 +106,7 @@ class Selection:
 
     def __print(self, count: int, items: list[dict[str, Any]], *args: str) -> None:
         arg_range = range(len(args))
-        category_str = " # " + " ".join("{:<38}" for _ in arg_range)
+        category_str = "#  " + " ".join("{:<38}" for _ in arg_range)
         print(category_str.format(*[s.upper() for s in list(args)]))
         for item in items:
             count += 1
