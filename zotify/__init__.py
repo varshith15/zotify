@@ -96,7 +96,7 @@ class Session(LibrespotSession):
             self.authenticate(session_builder.login_credentials)
 
     @staticmethod
-    def from_file(cred_file: Path | str, language: str = "en") -> Session:
+    def from_file(auth: OAuth, cred_file: Path | str, language: str = "en") -> Session:
         """
         Creates session using saved credentials file
         Args:
@@ -113,11 +113,13 @@ class Session(LibrespotSession):
             .build()
         )
         session = LibrespotSession.Builder(conf).stored_file(str(cred_file))
-        return Session(session, OAuth(), language)  # TODO
+        return Session(session, auth, language)  # TODO
 
     @staticmethod
     def from_oauth(
-        save_file: Path | str | None = None, language: str = "en"
+        auth: OAuth,
+        save_file: Path | str | None = None,
+        language: str = "en",
     ) -> Session:
         """
         Creates a session using OAuth2
@@ -136,15 +138,11 @@ class Session(LibrespotSession):
         else:
             builder.set_store_credentials(False)
 
-        # TODO: this should be done in App()
-        username = input("Username: ")
-        auth = OAuth()
-        print(f"Click on the following link to login:\n{auth.get_authorization_url()}")
         token = auth.await_token()
 
         session = LibrespotSession.Builder(builder.build())
         session.login_credentials = Authentication.LoginCredentials(
-            username=username,
+            username=auth.username,
             typ=Authentication.AuthenticationType.values()[3],
             auth_data=token.access_token.encode(),
         )
@@ -221,11 +219,7 @@ class Session(LibrespotSession):
             self.__event_service = EventService(self)
             self.__auth_lock_bool = False
             self.__auth_lock.notify_all()
-        self.dealer().connect()
         self.mercury().interested_in("sp" + "otify:user:attributes:update", self)
-        self.dealer().add_message_listener(
-            self, ["hm://connect-state/v1/connect/logout"]
-        )
 
 
 class ApiClient(LibrespotApiClient):
@@ -303,8 +297,10 @@ class OAuth:
     __code_verifier: str
     __server_thread: Thread
     __token: TokenProvider.StoredToken
+    username: str
 
-    def __init__(self):
+    def __init__(self, username: str):
+        self.username = username
         self.__server_thread = Thread(target=self.__run_server)
         self.__server_thread.start()
 

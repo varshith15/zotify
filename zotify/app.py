@@ -2,7 +2,7 @@ from argparse import Namespace
 from pathlib import Path
 from typing import Any
 
-from zotify import Session
+from zotify import OAuth, Session
 from zotify.collections import Album, Artist, Collection, Episode, Playlist, Show, Track
 from zotify.config import Config
 from zotify.file import TranscodingError
@@ -80,7 +80,9 @@ class Selection:
             except KeyError:
                 item = resp[i]
             self.__items.append(item)
-            self.__print(i + 1, item)
+            print(
+                "{:<2} {:<38}".format(i + 1, self.__fix_string_length(item["name"], 38))
+            )
         return self.__get_selection()
 
     @staticmethod
@@ -162,8 +164,12 @@ class App:
         #     self.__session = Session.from_prompt(
         #         self.__config.credentials_path, self.__config.language
         #     )
+        username = input("Username: ")
+        auth = OAuth(username)
+        auth_url = auth.get_authorization_url()
+        print(f"\nClick on the following link to login:\n{auth_url}")
         self.__session = Session.from_oauth(
-            self.__config.credentials_path, self.__config.language
+            auth, self.__config.credentials_path, self.__config.language
         )
 
         # Get items to download
