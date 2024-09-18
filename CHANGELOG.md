@@ -10,6 +10,7 @@
 
 ### Changes
 
+- Username and password login has been replaced with username and token
 - Genre metadata available for all tracks
 - Boolean command line options are now set like `--save-metadata` or `--no-save-metadata` for True or False
 - Setting `--config` (formerly `--config-location`) can be set to "None" to not use any config file

@@ -7,7 +7,7 @@ from zotify.app import App
 from zotify.config import CONFIG_PATHS, CONFIG_VALUES
 from zotify.utils import OptionalOrFalse
 
-VERSION = "0.9.6"
+VERSION = "0.9.7"
 
 
 def main():
@@ -51,7 +51,7 @@ def main():
         help="Searches for only this type",
     )
     parser.add_argument("--username", type=str, default="", help="Account username")
-    parser.add_argument("--password", type=str, default="", help="Account password")
+    parser.add_argument("--token", type=str, default="", help="Account token")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "urls",
@@ -127,8 +127,7 @@ def main():
     args = parser.parse_args()
     if args.version:
         print(VERSION)
-        return
-    if args.debug:
+    elif args.debug:
         args.func(args)
     else:
         try:

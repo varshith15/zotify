@@ -70,8 +70,8 @@ class Session(LibrespotSession):
     def __init__(
         self,
         session_builder: LibrespotSession.Builder,
-        oauth: OAuth,
         language: str = "en",
+        oauth: OAuth | None = None,
     ) -> None:
         """
         Authenticates user, saves credentials to a file and generates api token.
@@ -96,7 +96,7 @@ class Session(LibrespotSession):
             self.authenticate(session_builder.login_credentials)
 
     @staticmethod
-    def from_file(auth: OAuth, cred_file: Path | str, language: str = "en") -> Session:
+    def from_file(cred_file: Path | str, language: str = "en") -> Session:
         """
         Creates session using saved credentials file
         Args:
@@ -107,17 +107,17 @@ class Session(LibrespotSession):
         """
         if not isinstance(cred_file, Path):
             cred_file = Path(cred_file).expanduser()
-        conf = (
+        config = (
             LibrespotSession.Configuration.Builder()
             .set_store_credentials(False)
             .build()
         )
-        session = LibrespotSession.Builder(conf).stored_file(str(cred_file))
-        return Session(session, auth, language)  # TODO
+        session = LibrespotSession.Builder(config).stored_file(str(cred_file))
+        return Session(session, language)
 
     @staticmethod
     def from_oauth(
-        auth: OAuth,
+        oauth: OAuth,
         save_file: Path | str | None = None,
         language: str = "en",
     ) -> Session:
@@ -129,24 +129,24 @@ class Session(LibrespotSession):
         Returns:
             Zotify session
         """
-        builder = LibrespotSession.Configuration.Builder()
+        config = LibrespotSession.Configuration.Builder()
         if save_file:
             if not isinstance(save_file, Path):
                 save_file = Path(save_file).expanduser()
             save_file.parent.mkdir(parents=True, exist_ok=True)
-            builder.set_stored_credential_file(str(save_file))
+            config.set_stored_credential_file(str(save_file))
         else:
-            builder.set_store_credentials(False)
+            config.set_store_credentials(False)
 
-        token = auth.await_token()
+        token = oauth.await_token()
 
-        session = LibrespotSession.Builder(builder.build())
-        session.login_credentials = Authentication.LoginCredentials(
-            username=auth.username,
+        builder = LibrespotSession.Builder(config.build())
+        builder.login_credentials = Authentication.LoginCredentials(
+            username=oauth.username,
             typ=Authentication.AuthenticationType.values()[3],
             auth_data=token.access_token.encode(),
         )
-        return Session(session, auth, language)
+        return Session(builder, language, oauth)
 
     def __get_playable(
         self, playable_id: PlayableId, quality: Quality
@@ -186,7 +186,7 @@ class Session(LibrespotSession):
             self.api(),
         )
 
-    def oauth(self) -> OAuth:
+    def oauth(self) -> OAuth | None:
         """Returns OAuth service"""
         return self.__oauth
 
@@ -282,7 +282,10 @@ class TokenProvider(LibrespotTokenProvider):
         self._session = session
 
     def get_token(self, *scopes) -> TokenProvider.StoredToken:
-        return self._session.oauth().get_token()
+        oauth = self._session.oauth()
+        if oauth is None:
+            return super().get_token(*scopes)
+        return oauth.get_token()
 
     class StoredToken(LibrespotTokenProvider.StoredToken):
         def __init__(self, obj):
@@ -301,15 +304,15 @@ class OAuth:
 
     def __init__(self, username: str):
         self.username = username
-        self.__server_thread = Thread(target=self.__run_server)
-        self.__server_thread.start()
 
-    def get_authorization_url(self) -> str:
+    def auth_interactive(self) -> str:
         """
-        Generate OAuth URL
+        Starts local server for token callback
         Returns:
             OAuth URL
         """
+        self.__server_thread = Thread(target=self.__run_server)
+        self.__server_thread.start()
         self.__code_verifier = generate_code_verifier()
         code_challenge = get_code_challenge(self.__code_verifier)
         params = {
