@@ -11,12 +11,18 @@ Built on [Librespot](https://github.com/kokarare1212/librespot-python).
 ## Features
 
 - Save tracks at up to 320kbps<sup>**1**</sup>
-- Save to most popular audio formats
+- Save to most popular audio formats (including **WAV** for DJs!)
 - Built in search
 - Bulk downloads
 - Downloads synced lyrics<sup>**2**</sup>
 - Embedded metadata
-- Downloads all audio, metadata and lyrics directly, no substituting from other services.
+- Downloads all audio, metadata and lyrics directly, no substituting from other services
+- **🚀 NEW: Batch metadata fetching** - Dramatically faster playlist processing
+- **🚀 NEW: Smart duplicate detection** - Automatically skips duplicate tracks in playlists
+- **🚀 NEW: Intelligent file checking** - Checks for existing files before requesting audio keys (reduces rate limiting)
+- **🚀 NEW: Reverse download order** - Download newest tracks first with `--reverse` flag
+- **🚀 NEW: Fixed WAV format support** - Proper PCM encoding for lossless audio
+- **🚀 NEW: Improved Premium detection** - Works correctly with Spotify Family Plan accounts
 
 **1**: Non-premium accounts are limited to 160kbps \
 **2**: Requires premium
@@ -44,6 +50,20 @@ Downloads specified items. Accepts any combination of track, album, playlist, ep
     -le, --liked-episodes   Download user's liked episodes
     -f,  --followed         Download selection of users followed artists
     -s,  --search <search>  Searches for items to download
+         --reverse          Download tracks in reverse order (newest first)
+```
+
+### Usage Examples
+
+```bash
+# Download a playlist with WAV format for DJ use
+zotify https://open.spotify.com/playlist/... --audio-format wav --download-quality very_high
+
+# Download newest tracks first (useful for frequently updated playlists)
+zotify https://open.spotify.com/playlist/... --reverse
+
+# Download with all optimizations (automatic duplicate detection and smart skipping)
+zotify https://open.spotify.com/playlist/... --audio-format wav --print-skips
 ```
 
 <details><summary>All configuration options</summary>
@@ -122,3 +142,7 @@ Using Zotify violates Sp‌otify user guidelines and may get your account suspen
 
 Zotify is intended to be used in compliance with DMCA, Section 1201, for educational, private and fair use, or any simlar laws in other regions.
 Zotify contributors are not liable for damages caused by the use of this tool. See the [LICENSE](./LICENCE) file for more details.
+
+---
+
+**P.S.** This fork builds upon the excellent work of the original [Zotify project](https://github.com/zotify-dev/zotify) with performance optimizations and enhanced features for power users.

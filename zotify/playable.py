@@ -85,11 +85,16 @@ class Playable:
                     "{" + meta.name + "}", fix_filename(meta.string)
                 )
         file_path = library.joinpath(output).expanduser()
-        if file_path.exists() and not replace:
-            raise FileExistsError("File already downloaded")
-        else:
-            file_path.parent.mkdir(parents=True, exist_ok=True)
-            return file_path
+        
+        # Check if file exists with any common audio extension
+        if not replace:
+            common_extensions = ['.wav', '.mp3', '.ogg', '.flac', '.m4a', '.wv']
+            for ext in common_extensions:
+                if file_path.with_suffix(ext).exists():
+                    raise FileExistsError("File already downloaded")
+        
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        return file_path
 
     def write_audio_stream(
         self, output: Path | str, p_bar: tqdm = tqdm(disable=True)

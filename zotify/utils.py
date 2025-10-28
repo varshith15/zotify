@@ -22,7 +22,7 @@ class AudioFormat(Enum):
     MP3 = AudioCodec("mp3", "mp3")
     OPUS = AudioCodec("opus", "ogg")
     VORBIS = AudioCodec("vorbis", "ogg")
-    WAV = AudioCodec("wav", "wav")
+    WAV = AudioCodec("pcm_s16le", "wav")
     WAVPACK = AudioCodec("wavpack", "wv")
 
     def __str__(self):

@@ -196,7 +196,12 @@ class Session(LibrespotSession):
 
     def is_premium(self) -> bool:
         """Returns users premium account status"""
-        return self.get_user_attribute("type") == "premium"
+        try:
+            user_data = self.api().invoke_url("me")
+            return user_data.get("product") == "premium"
+        except:
+            # Fallback to old method if API call fails
+            return self.get_user_attribute("type") == "premium"
 
     def authenticate(self, credential: Authentication.LoginCredentials) -> None:
         """

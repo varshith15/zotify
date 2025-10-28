@@ -52,6 +52,11 @@ def main():
     )
     parser.add_argument("--username", type=str, default="", help="Account username")
     parser.add_argument("--token", type=str, default="", help="Account token")
+    parser.add_argument(
+        "--reverse",
+        action="store_true",
+        help="Download tracks in reverse order (newest first)",
+    )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "urls",
